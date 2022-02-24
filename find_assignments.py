@@ -20,7 +20,7 @@ def find_possible_assignment(contributors: List[Contributor], roles: List[Role])
                         [t for t in roles if t != role]
                     )
                     if possible_assignment is True:
-                        return (contributor, role)
+                        return [(contributor, role)]
                     if possible_assignment is not False:
-                        return [possible_assignment, (contributor, role)]
+                        return possible_assignment + [(contributor, role)]
     return False
