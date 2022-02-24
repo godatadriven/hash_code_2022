@@ -141,7 +141,7 @@ def find_possible_assignment_roel(contributors: List[Contributor], roles: List[R
 
 
 def create_solution_simulation(projects, contributors):
-    max_t = max([p.best_before for p in projects]) * 2
+    max_t = max([p.best_before + p.score - p.days for p in projects])
     available_contributors = contributors
 
     planning_list = []
@@ -191,6 +191,7 @@ PROBLEM_FILENAMES = [
 
 def solve_all(problem_filenames=PROBLEM_FILENAMES):
     for problem_filename in problem_filenames:
+        print(f"Working on {problem_filename}..")
         contributors, projects = parse_file(f"problems/{problem_filename}")
         planning = create_solution_simulation(projects, contributors)
 
