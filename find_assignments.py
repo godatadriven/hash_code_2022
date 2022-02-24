@@ -27,7 +27,7 @@ def find_possible_assignment_roel(contributors: List[Contributor], roles: List[R
                 if c not in assignment:
                     assignment.append(c)
                     for skill in c.skills:
-                        if skill.name == role.name:
+                        if skill.level < 99 and skill.name == role.name:
                             skill.level += 1
                     skill_contributor[role.name][_level].pop(index)
                     break
