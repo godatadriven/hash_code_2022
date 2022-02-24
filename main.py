@@ -1,5 +1,4 @@
 from collections import namedtuple
-from dataclasses import field
 import os
 import sys
 
@@ -10,6 +9,14 @@ Project = namedtuple(
 Skill = namedtuple("Skill", field_names=["name", "level"])
 Role = namedtuple("Role", field_names=["name", "level"])
 
+class Planning:
+    __slots__ = 'project', 'contributors'
+
+    def __init__(self, project):
+        self.project = project
+        self.contributors = []
+
+Planning = namedtuple("Planning", field_names=["project", "contributors"])
 
 def parse_file(filename):
     fp = open(filename, "r")
@@ -41,12 +48,10 @@ def parse_file(filename):
 
     return contributors, projects
 
-
 def project_value(project: Project, timestep: int) -> float:
     """Remaining project score over total project days"""
     discount = max(0, timestep - project.best_before)
     return (project.score - discount) / len(project.roles) * project.days
-
 
 PROBLEMS = [
     "a_an_example.in.txt",
@@ -59,3 +64,21 @@ PROBLEMS = [
 for problem_filename in PROBLEMS:
     contributors, projects = parse_file(problem_filename)
     # project_values = [project_value(p, 0) for p in projects]
+
+def write_file(planning_list, filename):
+    with open(filename, "w") as fp:
+        print(len(planning_list), file=fp)
+        for planning in planning_list:
+            print(planning.project.name, file=fp)
+            print(" ".join(contributor.name for contributor in planning.contributors), file=fp)
+
+
+if __name__ == "__main__":
+    contributors, projects = parse_file(sys.argv[1])
+
+    planning_list = []
+    for project in projects:
+        p = Planning(project, contributors)
+        planning_list.append(p)
+    
+    write_file(planning_list, sys.argv[2])
