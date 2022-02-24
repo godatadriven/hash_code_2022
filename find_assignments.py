@@ -1,10 +1,15 @@
-from typing import List
+from collections import namedtuple
+from typing import List, Tuple
+
+Contributor = namedtuple("Contributor", field_names=["name", "skills"])
+Project = namedtuple(
+    "Project", field_names=["name", "days", "score", "best_before", "roles"]
+)
+Skill = namedtuple("Skill", field_names=["name", "level"])
+Role = namedtuple("Role", field_names=["name", "level"])
 
 
-from main import Contributor, Role
-
-
-def find_possible_assignment(contributors: List[Contributor], roles: List[Role]):
+def find_possible_assignment(contributors: List[Contributor], roles: List[Role]) -> List[Tuple[Contributor, Role]]:
     if not roles:
         return True
     if not contributors:
