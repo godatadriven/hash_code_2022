@@ -160,12 +160,13 @@ def create_solution_simulation(projects, contributors):
             else:
                 projects.append(project)
 
-        t += 1
-        back_to_work = [v for k, v in working_contributors if k == 1]
+        steps = min([k for k, _ in working_contributors])
+        t += steps
+        back_to_work = [v for k, v in working_contributors if k == steps]
         for contrs in back_to_work:
             for contr in contrs:
                 available_contributors.append(contr)
-        working_contributors = [(k-1, v) for k, v in working_contributors if k > 1]
+        working_contributors = [(k-steps, v) for k, v in working_contributors if k > steps]
 
 
 PROBLEM_FILENAMES = [
