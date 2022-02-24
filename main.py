@@ -143,6 +143,7 @@ def find_possible_assignment_roel(contributors: List[Contributor], roles: List[R
 def create_solution_simulation(projects, contributors):
     max_t = max([p.best_before + p.score - p.days for p in projects])
     available_contributors = contributors
+    working_contributors = []  # list of tuples: (nr of days remaining and value, list of contributors)
 
     planning_list = []
     t = 0
@@ -171,13 +172,20 @@ def create_solution_simulation(projects, contributors):
                 planning = Planning(project, assigned_contributors)
                 planning_list.append(planning)
 
+                working_contributors.append((project.days, assigned_contributors))
                 for c in assigned_contributors:
                     available_contributors.remove(c)
+                
             else:
                 projects.append(project)
 
-        t += 1
-
+        t += 1        
+        back_to_work = [v for k, v in working_contributors if k == 1]
+        for contrs in back_to_work:
+            for contr in contrs:
+                available_contributors.append(contr)
+        working_contributors = [(k-1, v) for k, v in working_contributors if k > 1]
+        
 
 PROBLEM_FILENAMES = [
     "a_an_example.in.txt",
