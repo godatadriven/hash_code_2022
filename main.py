@@ -1,4 +1,4 @@
-from collections import namedtuple
+from collections import defaultdict, namedtuple
 import os
 import sys
 
@@ -8,7 +8,24 @@ Project = namedtuple(
 )
 Skill = namedtuple("Skill", field_names=["name", "level"])
 Role = namedtuple("Role", field_names=["name", "level"])
+Project = namedtuple("Project", field_names=["name", "days", "score", "best_before", "roles"])
 
+class Role:
+    __slots__ = 'name', 'level'
+
+    def __init__(self, name, level):
+        self.name = name
+        # convert 1 index to 0
+        self.level = level - 1
+
+class Skill:
+    __slots__ = 'name', 'level'
+
+    def __init__(self, name, level):
+        self.name = name
+        # convert 1 index to 0
+        self.level = level - 1
+    
 class Planning:
     __slots__ = 'project', 'contributors'
 
@@ -73,12 +90,34 @@ def write_file(planning_list, filename):
             print(" ".join(contributor.name for contributor in planning.contributors), file=fp)
 
 
-if __name__ == "__main__":
-    contributors, projects = parse_file(sys.argv[1])
+def create_solution(projects, contributors):
+    skill_contributor = defaultdict(lambda: [[] for _ in range(100)])
+
+    for contributor in contributors:
+        for skill in contributor.skills:
+            skill_contributor[skill.name][skill.level].append(contributor)
 
     planning_list = []
     for project in projects:
-        p = Planning(project, contributors)
-        planning_list.append(p)
+        contributors = []
+        for role in project.roles:
+            _level = role.level
+            while _level<100  and not skill_contributor[role.name][_level]:
+                _level+=1
+            
+            if _level<100:
+                contributors.append(skill_contributor[role.name][_level][0])
+            else:
+                break
+        
+        if len(contributors) == len(project.roles):
+            planning_list.append(Planning(project, contributors))
+
+    return planning_list
+
+if __name__ == "__main__":
+    contributors, projects = parse_file(sys.argv[1])
+
+    planning = create_solution(projects, contributors)
     
-    write_file(planning_list, sys.argv[2])
+    write_file(planning, sys.argv[2])
