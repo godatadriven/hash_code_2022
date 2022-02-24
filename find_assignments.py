@@ -2,6 +2,8 @@ from typing import List
 
 
 from main import Contributor, Role
+
+
 def find_possible_assignment(contributors: List[Contributor], roles: List[Role]):
     if not roles:
         return True
