@@ -9,6 +9,25 @@ Skill = namedtuple("Skill", field_names=["name", "level"])
 Role = namedtuple("Role", field_names=["name", "level"])
 
 
+def find_possible_assignment_roel(contributors: List[Contributor], roles: List[Role]):
+    skill_contributor = defaultdict(lambda: [[] for _ in range(100)])
+    for contributor in contributors:
+        for skill in contributor.skills:
+            skill_contributor[skill.name][skill.level].append(contributor)
+
+    assignment = []
+    for role in roles:
+        _level = role.level
+        while _level < 100 and not skill_contributor[role.name][_level]:
+            _level += 1
+
+        if _level < 100:
+            assignment.append(skill_contributor[role.name][_level].pop())
+        else:
+            return None
+    return assignment
+
+
 def find_possible_assignment(contributors: List[Contributor], roles: List[Role]) -> List[Tuple[Contributor, Role]]:
     if not roles:
         return True

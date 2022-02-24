@@ -121,6 +121,25 @@ def create_solution(projects, contributors):
     return planning_list
 
 
+def find_possible_assignment_roel(contributors: List[Contributor], roles: List[Role]):
+    skill_contributor = defaultdict(lambda: [[] for _ in range(100)])
+    for contributor in contributors:
+        for skill in contributor.skills:
+            skill_contributor[skill.name][skill.level].append(contributor)
+
+    assignment = []
+    for role in roles:
+        _level = role.level
+        while _level < 100 and not skill_contributor[role.name][_level]:
+            _level += 1
+
+        if _level < 100:
+            assignment.append(skill_contributor[role.name][_level].pop())
+        else:
+            return None
+    return assignment
+
+
 def create_solution_simulation(projects, contributors):
     max_t = max([p.best_before for p in projects]) * 2
     available_contributors = contributors
@@ -129,9 +148,6 @@ def create_solution_simulation(projects, contributors):
     t = 0
     while True:
         remaining_projects = projects
-
-
-        # escape on best before epxired
 
         if not remaining_projects:
             return planning_list
@@ -143,12 +159,15 @@ def create_solution_simulation(projects, contributors):
         for project in remaining_projects:
             assignment: List[
                 Tuple[Contributor, Role]
-            ] = find_possible_assignment(available_contributors, project.roles)
+            ] = find_possible_assignment_roel(available_contributors, project.roles)
 
             if assignment:
-                assigned_contributors = [
-                    contributor for contributor, role in assignment
-                ]
+                assigned_contributors = assignment
+
+                ## required by Daniel version
+                # assigned_contributors = [
+                #     contributor for contributor, role in assignment
+                # ]
                 planning = Planning(project, assigned_contributors)
                 planning_list.append(planning)
 
