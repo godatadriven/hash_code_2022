@@ -1,4 +1,4 @@
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 from typing import List, Tuple
 
 Contributor = namedtuple("Contributor", field_names=["name", "skills"])
@@ -22,7 +22,12 @@ def find_possible_assignment_roel(contributors: List[Contributor], roles: List[R
             _level += 1
 
         if _level < 100:
-            assignment.append(skill_contributor[role.name][_level].pop())
+            candidates = skill_contributor[role.name][_level]
+            for index, c in enumerate(candidates):
+                if c not in assignment:
+                    assignment.append(c)
+                    skill_contributor[role.name][_level].pop(index)
+                    break
         else:
             return None
     return assignment

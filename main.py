@@ -3,7 +3,7 @@ import os
 import sys
 from typing import List, Tuple
 
-from find_assignments import find_possible_assignment
+from find_assignments import find_possible_assignment, find_possible_assignment_roel
 
 Contributor = namedtuple("Contributor", field_names=["name", "skills"])
 Project = namedtuple(
@@ -121,25 +121,6 @@ def create_solution(projects, contributors):
     return planning_list
 
 
-def find_possible_assignment_roel(contributors: List[Contributor], roles: List[Role]):
-    skill_contributor = defaultdict(lambda: [[] for _ in range(100)])
-    for contributor in contributors:
-        for skill in contributor.skills:
-            skill_contributor[skill.name][skill.level].append(contributor)
-
-    assignment = []
-    for role in roles:
-        _level = role.level
-        while _level < 100 and not skill_contributor[role.name][_level]:
-            _level += 1
-
-        if _level < 100:
-            assignment.append(skill_contributor[role.name][_level].pop())
-        else:
-            return None
-    return assignment
-
-
 def create_solution_simulation(projects, contributors):
     max_t = max([p.best_before + p.score - p.days for p in projects])
     available_contributors = contributors
@@ -175,21 +156,21 @@ def create_solution_simulation(projects, contributors):
                 working_contributors.append((project.days, assigned_contributors))
                 for c in assigned_contributors:
                     available_contributors.remove(c)
-                
+
             else:
                 projects.append(project)
 
-        t += 1        
+        t += 1
         back_to_work = [v for k, v in working_contributors if k == 1]
         for contrs in back_to_work:
             for contr in contrs:
                 available_contributors.append(contr)
         working_contributors = [(k-1, v) for k, v in working_contributors if k > 1]
-        
+
 
 PROBLEM_FILENAMES = [
     "a_an_example.in.txt",
-    "b_better_start_small.in.txt",
+    # "b_better_start_small.in.txt",
     "c_collaboration.in.txt",
     "d_dense_schedule.in.txt",
     "e_exceptional_skills.in.txt",
